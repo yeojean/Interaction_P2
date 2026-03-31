@@ -297,6 +297,29 @@ a {
   appearance: none;
 }
 
+.slider-value-badge {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  padding: 2px 6px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #f8f8f8;
+  background: rgba(0, 0, 0, 0.66);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: opacity 120ms ease, transform 120ms ease;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.slider-value-badge.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .slider-input:focus-visible {
   outline: none;
 }

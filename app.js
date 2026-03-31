@@ -351,14 +351,18 @@ class EmotionSlider {
     this.input.max = "100";
     this.input.step = "1";
     this.input.value = String(this.value);
-    this.input.setAttribute("aria-label", `${this.config.name} slider`);
+    this.input.setAttribute("aria-label", this.config.name + " slider");
+
+    this.valueBadge = document.createElement("div");
+    this.valueBadge.className = "slider-value-badge";
+    this.valueBadge.textContent = Math.round(this.value) + "%";
 
     if (this.previewState) {
       this.el.classList.add("is-preview");
       this.input.disabled = true;
     }
 
-    this.stage.append(this.svg, this.input);
+    this.stage.append(this.svg, this.input, this.valueBadge);
     this.el.append(this.stage);
 
     this.renderer = this.createRenderer();
@@ -376,6 +380,7 @@ class EmotionSlider {
     this.el.addEventListener("mouseleave", () => {
       this.hovered = false;
       this.active = false;
+      this.setBadgeVisible(false);
     });
 
     this.input.addEventListener("pointerdown", () => {
@@ -383,6 +388,7 @@ class EmotionSlider {
       this.hovered = true;
       this.pointerMoved = false;
       this.pointerStartValue = this.value;
+      this.setBadgeVisible(true);
     });
 
     this.stage.addEventListener("pointerdown", (event) => {
@@ -394,12 +400,14 @@ class EmotionSlider {
       this.dragPointerId = event.pointerId;
       this.stage.setPointerCapture(event.pointerId);
       this.setValueFromPointerEvent(event);
+      this.setBadgeVisible(true);
       event.preventDefault();
     });
 
     this.stage.addEventListener("pointermove", (event) => {
       if (this.dragPointerId !== event.pointerId) return;
       this.setValueFromPointerEvent(event);
+      this.setBadgeVisible(true);
       event.preventDefault();
     });
 
@@ -407,6 +415,7 @@ class EmotionSlider {
       if (this.dragPointerId !== event.pointerId) return;
       this.dragPointerId = null;
       this.active = false;
+      this.setBadgeVisible(false);
       if (!this.pointerMoved && this.link) {
         window.location.href = this.link;
       }
@@ -417,11 +426,13 @@ class EmotionSlider {
       if (this.dragPointerId !== event.pointerId) return;
       this.dragPointerId = null;
       this.active = false;
+      this.setBadgeVisible(false);
     });
 
     window.addEventListener("pointerup", () => {
       this.active = false;
       this.dragPointerId = null;
+      this.setBadgeVisible(false);
     });
 
     this.input.addEventListener("focus", () => {
@@ -430,10 +441,15 @@ class EmotionSlider {
 
     this.input.addEventListener("blur", () => {
       this.active = false;
+      this.setBadgeVisible(false);
     });
 
     this.input.addEventListener("input", (event) => {
       this.value = clamp(Number(event.target.value), 0, 100);
+      this.updateBadgeText();
+      if (this.active || this.dragPointerId !== null) {
+        this.setBadgeVisible(true);
+      }
       if (Math.abs(this.value - this.pointerStartValue) > 1) {
         this.pointerMoved = true;
       }
@@ -484,6 +500,7 @@ class EmotionSlider {
     if (Math.abs(nextValue - this.value) > 0.2) {
       this.value = nextValue;
       this.input.value = String(Math.round(nextValue));
+      this.updateBadgeText();
       if (Math.abs(this.value - this.pointerStartValue) > 1) {
         this.pointerMoved = true;
       }
@@ -491,6 +508,18 @@ class EmotionSlider {
         this.triggerExplosion(performance.now());
       }
     }
+  }
+
+
+  updateBadgeText() {
+    if (!this.valueBadge) return;
+    this.valueBadge.textContent = Math.round(this.value) + "%";
+  }
+
+  setBadgeVisible(visible) {
+    if (!this.valueBadge) return;
+    this.updateBadgeText();
+    this.valueBadge.classList.toggle("is-visible", Boolean(visible));
   }
 
   isHoverState() {
@@ -643,7 +672,8 @@ function createTiredRenderer(slider) {
   slider.svg.append(body, tip, thumb);
 
   return (_ts, state) => {
-    const outlineColor = tiredTone(slider.value);
+    const isColored = state.hover || state.active;
+    const outlineColor = isColored ? tiredTone(slider.value) : "#f4f4f4";
     body.setAttribute("stroke", outlineColor);
     tip.setAttribute("stroke", outlineColor);
 
