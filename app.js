@@ -501,6 +501,7 @@ class EmotionSlider {
       this.value = nextValue;
       this.input.value = String(Math.round(nextValue));
       this.updateBadgeText();
+      this.updateBadgePosition();
       if (Math.abs(this.value - this.pointerStartValue) > 1) {
         this.pointerMoved = true;
       }
@@ -516,9 +517,57 @@ class EmotionSlider {
     this.valueBadge.textContent = Math.round(this.value) + "%";
   }
 
+  getThumbPoint(ts = performance.now()) {
+    const progress = this.value / 100;
+
+    if (this.key === "tired") {
+      return { x: lerp(108, 204, progress) + 3, y: 79 };
+    }
+
+    if (this.key === "cold") {
+      return { x: 170, y: lerp(92, 20, progress) + 3 };
+    }
+
+    if (this.key === "hot") {
+      return { x: 160, y: lerp(98, 24, progress) };
+    }
+
+    if (this.key === "dizzy") {
+      const active = this.active;
+      const hover = this.hovered || this.active;
+      const phase = hover || active ? ts * 0.0012 : 0;
+      const distort = active ? 4 + Math.abs(Math.sin(ts * 0.013)) * 3.8 : hover ? 0.8 : 0;
+      const point = spiralPoint(145, 62, active ? 3.15 : 2.82, 46, phase, distort, ts, clamp(0.12 + progress * 0.84, 0.1, 0.98));
+      return { x: point.x, y: point.y };
+    }
+
+    if (this.key === "angry") {
+      const cx = 160;
+      const cy = 66;
+      const angle = (-70 + this.value * 3.4) * (Math.PI / 180);
+      return {
+        x: cx + Math.cos(angle) * 34,
+        y: cy + Math.sin(angle) * 34
+      };
+    }
+
+    const y = this.key === "love" && this.active ? 54 : 60;
+    return { x: lerp(24, 296, progress), y };
+  }
+
+  updateBadgePosition(ts = performance.now()) {
+    if (!this.valueBadge) return;
+    const point = this.getThumbPoint(ts);
+    const left = clamp((point.x / 320) * 100, 0, 100);
+    const top = clamp((point.y / 120) * 100, 0, 100);
+    this.valueBadge.style.left = left + "%";
+    this.valueBadge.style.top = top + "%";
+  }
+
   setBadgeVisible(visible) {
     if (!this.valueBadge) return;
     this.updateBadgeText();
+    this.updateBadgePosition();
     this.valueBadge.classList.toggle("is-visible", Boolean(visible));
   }
 
@@ -554,6 +603,10 @@ class EmotionSlider {
       active: this.isActiveState(),
       exploded: this.exploded
     });
+
+    if (this.valueBadge && this.valueBadge.classList.contains("is-visible")) {
+      this.updateBadgePosition(ts);
+    }
   }
 
   createRenderer() {
