@@ -941,7 +941,7 @@ function createDizzyRenderer(slider) {
     const phase = hover || active ? ts * 0.0012 : 0;
     const distort = active ? 4 + Math.abs(Math.sin(ts * 0.013)) * 3.8 : hover ? 0.8 : 0;
     const d = spiralPath(145, 62, active ? 3.15 : 2.82, 46, phase, distort, ts);
-    const color = active ? "#FFD700" : "#f4f4f4";
+    const color = active ? "#FFD700" : hover ? slider.config.accent : "#f4f4f4";
 
     track.setAttribute("d", d);
     glow.setAttribute("d", d);
