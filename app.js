@@ -636,7 +636,7 @@ class EmotionSlider {
 function createPainRenderer(slider) {
   const glow = createSvg("path", {
     fill: "none",
-    stroke: slider.config.accent,
+    stroke: "#f4f4f4",
     "stroke-width": 6,
     "stroke-linecap": "round",
     "stroke-linejoin": "round",
@@ -644,7 +644,7 @@ function createPainRenderer(slider) {
   });
   const track = createSvg("path", {
     fill: "none",
-    stroke: slider.config.accent,
+    stroke: "#f4f4f4",
     "stroke-width": 2,
     "stroke-linecap": "round",
     "stroke-linejoin": "round"
@@ -658,16 +658,17 @@ function createPainRenderer(slider) {
     const mid = 60;
     const amp = state.active ? 18 + slider.value * 0.035 : state.hover ? 10 : 0;
     const path = amp > 0 ? ecgPath(x1, x2, mid, amp, ts, state.active ? 2.2 : 1.2) : linePath(x1, mid, x2);
+    const baseColor = state.active ? "#ff1d1d" : state.hover ? slider.config.accent : "#f4f4f4";
     const glowOpacity = state.active
       ? 0.28 + Math.abs(Math.sin(ts * 0.013)) * 0.32
       : state.hover
       ? 0.2
-      : 0.08;
+      : 0.05;
 
     track.setAttribute("d", path);
     glow.setAttribute("d", path);
-    track.setAttribute("stroke", state.active ? "#ff1d1d" : slider.config.accent);
-    glow.setAttribute("stroke", state.active ? "#ff1d1d" : slider.config.accent);
+    track.setAttribute("stroke", baseColor);
+    glow.setAttribute("stroke", baseColor);
     glow.setAttribute("opacity", String(glowOpacity));
 
     const thumbX = lerp(x1, x2, slider.value / 100);
@@ -685,7 +686,7 @@ function createTiredRenderer(slider) {
     height: 30,
     rx: 2,
     fill: "none",
-    stroke: "#ff4444",
+    stroke: "#f4f4f4",
     "stroke-width": 2
   });
 
@@ -695,7 +696,7 @@ function createTiredRenderer(slider) {
     width: 8,
     height: 14,
     fill: "none",
-    stroke: "#ff4444",
+    stroke: "#f4f4f4",
     "stroke-width": 2
   });
 
@@ -707,8 +708,8 @@ function createTiredRenderer(slider) {
       width: 12,
       height: 20,
       rx: 1,
-      fill: "#ff4444",
-      opacity: 0.12
+      fill: "#f4f4f4",
+      opacity: 0
     });
     bars.push(bar);
     slider.svg.append(bar);
@@ -757,10 +758,10 @@ function createColdRenderer(slider) {
     y1: 74,
     x2: 160,
     y2: 74,
-    stroke: "#0b47ff",
+    stroke: "#f4f4f4",
     "stroke-width": 5,
     "stroke-linecap": "round",
-    opacity: 0.75
+    opacity: 0
   });
 
   const bulb = createSvg("circle", {
@@ -777,7 +778,7 @@ function createColdRenderer(slider) {
     cy: 92,
     r: 14,
     fill: "none",
-    stroke: "#0b47ff",
+    stroke: "#f4f4f4",
     "stroke-width": 5,
     opacity: 0
   });
@@ -815,7 +816,7 @@ function createColdRenderer(slider) {
 
     tubeLine.setAttribute("stroke", color);
     bulb.setAttribute("stroke", color);
-    levelLine.setAttribute("stroke", coldColor);
+    levelLine.setAttribute("stroke", hover ? coldColor : "#f4f4f4");
     bulbGlow.setAttribute("stroke", coldColor);
 
     [...ticks.children].forEach((tick) => {
@@ -829,7 +830,7 @@ function createColdRenderer(slider) {
     const levelY = lerp(bottomY, topY, progress);
     levelLine.setAttribute("y1", String(n2(bottomY)));
     levelLine.setAttribute("y2", String(n2(levelY)));
-    levelLine.setAttribute("opacity", hover ? "1" : "0.24");
+    levelLine.setAttribute("opacity", hover ? "1" : "0");
 
     const glowOpacity = state.active ? 0.34 + progress * 0.4 : hover ? 0.14 + progress * 0.18 : 0;
     bulbGlow.setAttribute("opacity", String(glowOpacity));
@@ -871,7 +872,7 @@ function createHotRenderer(slider) {
     y1: 24,
     x2: 160,
     y2: 98,
-    stroke: "#ff2300",
+    stroke: "#f4f4f4",
     "stroke-width": 8,
     "stroke-linecap": "round",
     opacity: 0
@@ -912,14 +913,14 @@ function createHotRenderer(slider) {
 function createDizzyRenderer(slider) {
   const glow = createSvg("path", {
     fill: "none",
-    stroke: "#ffffff",
+    stroke: "#f4f4f4",
     "stroke-width": 4,
     opacity: 0
   });
 
   const track = createSvg("path", {
     fill: "none",
-    stroke: "#ffffff",
+    stroke: "#f4f4f4",
     "stroke-width": 1.7,
     "stroke-linecap": "round",
     "stroke-linejoin": "round"
@@ -940,7 +941,7 @@ function createDizzyRenderer(slider) {
     const phase = hover || active ? ts * 0.0012 : 0;
     const distort = active ? 4 + Math.abs(Math.sin(ts * 0.013)) * 3.8 : hover ? 0.8 : 0;
     const d = spiralPath(145, 62, active ? 3.15 : 2.82, 46, phase, distort, ts);
-    const color = active ? "#FFD700" : "#f5f5f5";
+    const color = active ? "#FFD700" : "#f4f4f4";
 
     track.setAttribute("d", d);
     glow.setAttribute("d", d);
@@ -968,7 +969,7 @@ function createDizzyRenderer(slider) {
 function createAnxiousRenderer(slider) {
   const glow = createSvg("path", {
     fill: "none",
-    stroke: slider.config.accent,
+    stroke: "#f4f4f4",
     "stroke-width": 5,
     opacity: 0.08,
     "stroke-linecap": "round",
@@ -977,7 +978,7 @@ function createAnxiousRenderer(slider) {
 
   const track = createSvg("path", {
     fill: "none",
-    stroke: slider.config.accent,
+    stroke: "#f4f4f4",
     "stroke-width": 2,
     "stroke-linecap": "round",
     "stroke-linejoin": "round"
@@ -1007,7 +1008,10 @@ function createAnxiousRenderer(slider) {
 
     track.setAttribute("d", d);
     glow.setAttribute("d", d);
-    glow.setAttribute("opacity", state.active ? "0.35" : state.hover ? "0.2" : "0.08");
+    const lineColor = state.hover || state.active ? slider.config.accent : "#f4f4f4";
+    track.setAttribute("stroke", lineColor);
+    glow.setAttribute("stroke", lineColor);
+    glow.setAttribute("opacity", state.active ? "0.35" : state.hover ? "0.2" : "0.06");
 
     const x = lerp(x1, x2, slider.value / 100);
     thumb.setAttribute("cx", String(n2(x)));
@@ -1018,7 +1022,7 @@ function createAnxiousRenderer(slider) {
 function createLoveRenderer(slider) {
   const glow = createSvg("path", {
     fill: "none",
-    stroke: slider.config.accent,
+    stroke: "#f4f4f4",
     "stroke-width": 6,
     opacity: 0.08,
     "stroke-linecap": "round",
@@ -1027,7 +1031,7 @@ function createLoveRenderer(slider) {
 
   const track = createSvg("path", {
     fill: "none",
-    stroke: slider.config.accent,
+    stroke: "#f4f4f4",
     "stroke-width": 2,
     "stroke-linecap": "round",
     "stroke-linejoin": "round"
@@ -1058,9 +1062,10 @@ function createLoveRenderer(slider) {
 
     track.setAttribute("d", path);
     glow.setAttribute("d", path);
-    track.setAttribute("stroke", state.active ? "#ff00d9" : slider.config.accent);
-    glow.setAttribute("stroke", state.active ? "#ff00d9" : slider.config.accent);
-    glow.setAttribute("opacity", state.active ? "0.44" : state.hover ? "0.26" : "0.08");
+    const lineColor = state.active ? "#ff00d9" : state.hover ? slider.config.accent : "#f4f4f4";
+    track.setAttribute("stroke", lineColor);
+    glow.setAttribute("stroke", lineColor);
+    glow.setAttribute("opacity", state.active ? "0.44" : state.hover ? "0.26" : "0.05");
 
     const x = lerp(x1, x2, slider.value / 100);
     thumb.setAttribute("cx", String(n2(x)));
@@ -1077,7 +1082,7 @@ function createAngryRenderer(slider) {
     cy: 66,
     r: 38,
     fill: "none",
-    stroke: "#ff0000",
+    stroke: "#f4f4f4",
     "stroke-width": 12,
     opacity: 0
   });
@@ -1095,7 +1100,7 @@ function createAngryRenderer(slider) {
     cy: 66,
     r: 34,
     fill: "none",
-    stroke: "#cc0000",
+    stroke: "#f4f4f4",
     "stroke-width": 2
   });
 
@@ -1105,7 +1110,7 @@ function createAngryRenderer(slider) {
     x2: 202,
     y2: 25,
     fill: "none",
-    stroke: "#cc0000",
+    stroke: "#f4f4f4",
     "stroke-width": 2,
     "stroke-linecap": "round"
   });
@@ -1115,7 +1120,7 @@ function createAngryRenderer(slider) {
     cy: 21,
     r: 5,
     fill: "none",
-    stroke: "#cc0000",
+    stroke: "#f4f4f4",
     "stroke-width": 2
   });
 
@@ -1123,7 +1128,7 @@ function createAngryRenderer(slider) {
     cx: 206,
     cy: 21,
     r: 2.3,
-    fill: "#ffb400",
+    fill: "#f4f4f4",
     opacity: 0
   });
 
@@ -1135,7 +1140,7 @@ function createAngryRenderer(slider) {
       y1: 20,
       x2: 160,
       y2: 6,
-      stroke: "#ff0000",
+      stroke: "#f4f4f4",
       "stroke-width": 9,
       "stroke-linecap": "square",
       opacity: 0
@@ -1145,7 +1150,7 @@ function createAngryRenderer(slider) {
       y1: 20,
       x2: 160,
       y2: 6,
-      stroke: "#d10000",
+      stroke: "#f4f4f4",
       "stroke-width": 4,
       "stroke-linecap": "square",
       opacity: 0
@@ -1261,7 +1266,7 @@ function createAngryRenderer(slider) {
       `translate(${cx} ${cy}) scale(${n2(pulse)}) translate(${-cx} ${-cy})`
     );
 
-    const shellColor = active ? "#ff0000" : "#b30000";
+    const shellColor = active ? "#ff0000" : hover ? "#b30000" : "#f4f4f4";
     shell.setAttribute("stroke", shellColor);
     shellGlow.setAttribute("stroke", shellColor);
     fuse.setAttribute("stroke", shellColor);
